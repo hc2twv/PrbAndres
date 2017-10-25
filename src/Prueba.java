@@ -5,4 +5,5 @@ public class Prueba {
     public String id;
     public String id1;
     public String id2;
+    public String id3;
 }
