@@ -4,14 +4,13 @@ This quick start overviews the steps a newbie programmer will have to follow in 
 ## Scenario
 The scenario presented in this guide is composed by two containers.
 One for running Cygnus and another for running MYSQL.
+
 ![start-scenario](./images/scenario.png)
 
 ## <a name="section1"></a>Before starting
 
 The aim of this document is providing an easy guide to setup FIWARE Cygnus and other containers
-for storing context data:
-
-In this guide we will run a basic example of Cygnus for 
+for storing context data. In this guide we will run a basic example of Cygnus for 
 storing NGSIv2 events to MySQL.
 
 Obviously, you will need docker and docker-compose installed and running in you machine. Please, check [this](https://docs.docker.com/linux/started/) official start guide.
@@ -53,13 +52,14 @@ the template provided for persisting data to MySQl.
 
 First, go to your browser and open Cygnus using this URL http://127.0.0.1:9090/nifi
 
+The next image provides you the location of many components of Cygnus. Please put special 
+attention to the template button, play button and processor component, you will use them later.
+![cygnus-gui](./images/cygnus-toolbar-components.png)
+
 Now go to the Components toolbar which is placed in the upper section of the NiFi GUI,  
 find the template icon and drag and drop it inside the Cygnus user space. 
 At this point, a popup should be displayed with a list of all the templates available. 
 Please select the template Orion-To-Mysql. 
-
-![cygnus-gui](./images/nifi-toolbar-components.png)
-
 
 The Orion-To-Mysql template contains three processors. The first processor opens a 
 connection for getting NGSIv2 notifications through the 5050 port. On the other hand,
@@ -71,24 +71,31 @@ the logs of the received events.
 
 Before starting the processors, you need to set your MySQL password and enable the DBCConnectionPool controller. 
 For doing that please follow the instructions:
-* 1 > Do right click on any part of the NiFI GUI user space, at this point
-a list of controllers should be displayed, locate the DBCConnectionPool controller 
-and click on configure.
-* 2 > Go to the Controller Services Tab
+* 1 > Do right click on any part of the Cygnus GUI user space, and then  click on configure.
+![cygnus-step1](./images/step1.png)
+* 2 > Go to the Controller Services Tab, at this point a list of controllers should be displayed, locate the DBCConnectionPool controller.
 * 3 > Click on the configuration button of the "DBCPConnectionPool"
+![cygnus-step2](./images/step2.png)
 * 4 > Go to the controller Properties tab  and 
-put "example" in the password field.
-* 5 > Apply the changes and Enable the controller.
-* 6> Select all the processors (press shift and click on every processor) and start them 
-by clicking on the start button.
-With all the configuration done, now you can test Cygnus sending a notification to the 
-configured listening port in our case is "5050" and the path "v2/notify".
+put "example" in the password field, then apply the changes.
+![cygnus-step3](./images/step3.png)
+* 5 > Enable the processor by clicking on the thunder icon and then click on enable,
+then close the controller configuration page.
+![cygnus-step4](./images/step4.png)
+![cygnus-step5](./images/step5.png)
+* 6 >Select all the processors (press shift and click on every processor) and start them 
+by clicking on the start button. Now, you can see that the status icon of each processor turned from red to green.
 
-Now for test your deployment, you may send a NGSI-like notification emulation (please, check the notification examples at [cygnus-ngsi](cygnus-ngsi/resources/ngsi-examples)):
+
+Now for test your deployment, you may send a NGSI-like notification emulation to our
+listening port (5050) and path (v2/notify):
 
 
 (3) Open a new terminal and create and edit somewhere a `notification.sh` file:
-
+```
+touch notification.sh
+```
+Copy and paste this content to the notification.sh file
 ```
 URL=$1
 
@@ -117,19 +124,20 @@ chmod a+x notification.sh
 ./notification.sh http://localhost:5050/v2/notify
 ```
 
-(5) If you want to see the logs, look at the provenance report in the log attribute processor.
-    For doing that select the "Log attribute" processor and do right click over it, then select "View data provenance".
-    
-![cygnus-provenance](./images/nifi-provenance.png)
+(5) (Optional) If you want to see the events received, select the Log
+Attribute processor, do right click and select "view data provenance"
+![cygnus-step6](./images/step6.png)
+Finally, you can see the details of the received data by clicking on the information icon for each event of the list.
+![cygnus-step7](./images/step7.png)
 
 (6) You can check if the database and the table has been created. First enter 
-to the MySQL container console 
+to the MySQL container console. 
 ```
 sudo docker exec -it mysql /bin/bash
 
 ```
 Then check the created databases and his tables. For logging to mysql 
-use "root" as user and "example" as password
+use "root" as user and "example" as password.
 ```
 $ mysql -u root -p
 mysql> show databases;
@@ -179,7 +187,7 @@ output:
 
 ```
 
-Now you can receive NGSIv2 notification from Orion Context Broker and
+Now you can receive NGSIv2 notifications from Orion Context Broker and
 store the data into MySQL using Cygnus.
 
 ## Reporting issues and contact information
