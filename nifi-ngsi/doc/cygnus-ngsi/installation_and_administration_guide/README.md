@@ -8,8 +8,8 @@
 * Configuration:
     * [Cygnus GUI](./cygnus_gui.md)
     * [Controllers Configuration](./controllers_configuration.md)
-    * [NGSI Processors configuration](../../installation_and_administration_guide/log4j_conf.md)
-    * [Configuration examples](./configuration_examples.md)
+    * [NGSI Processors configuration](./processors_configuration.md)
+    * [Configuration examples](./configuration_examples.md.l)
 
 * Advanced topics:
     TBD
