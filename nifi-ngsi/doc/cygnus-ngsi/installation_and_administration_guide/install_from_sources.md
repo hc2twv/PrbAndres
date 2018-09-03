@@ -1,64 +1,133 @@
 # <a name="top"></a>Installing cygnus-ngsi from sources
 Content:
 
-* [Prerequisites](#section1)
-* [Installing cygnus-ngsi](#section2)
-    * [Cloning `fiware-cygnus`](#section2.1)
-    * [Installing `cygnus-ngsi`](#section2.2)
-    * [Known issues](#section2.3)
-* [Installing dependencies](#section3)
-
-## <a name="section1"></a>Prerequisites
-[`cygnus-common`](../../cygnus-common/installation_and_administration_guide/install_from_sources.md) must be installed. This includes Maven, `cygnus` user creation, `log4j` path creation, Apache Flume and `cygnus-flume-ng` script installation.
-
-[Top](#top)
+* [Installing cygnus-ngsi](#section1)
+    * [Cloning `fiware-cygnus`](#section1.1)
+    * [Installing `cygnus`](#section1.2)
 
 ## <a name="section2"></a>Installing Cygnus
 ### <a name="section2.1"></a>Cloning `fiware-cygnus`
 Start by cloning the Github repository:
 
-    $ git clone https://github.com/telefonicaid/fiware-cygnus.git
+    $ git clone https://github.com/ging/fiware-cygnus.git
     $ cd fiware-cygnus
     $ git checkout <branch>
 
-`<branch>` should be typically a stable release branch, e.g. `release/0.13.0`, but could also be `master` (synchronized with the latest release) or `develop` (contains the latest not stable changes).
+`<branch>` should be typically a stable release branch, e.g. `release/1.0.0`, but could also be `master` (synchronized with the latest release) or `develop` (contains the latest not stable changes).
 
 [Top](#top)
 
-### <a name="section2.2"></a>Installing `cygnus-ngsi`
-`cygnus-ngsi` can be built as a fat Java jar file containing all third-party dependencies (**recommended**):
+From this point the way to install Cygnus is exactly the same as
+NiFi so, we will use the same step as the Official NiFi Documentation.
 
-    $ cd cygnus-ngsi
-    $ APACHE_MAVEN_HOME/bin/mvn clean compile exec:exec assembly:single
-    $ cp target/cygnus-ngsi-<x.y.z>-jar-with-dependencies.jar APACHE_FLUME_HOME/plugins.d/cygnus/lib
+## Linux Operating System Configuration
 
-Or as a thin Java jar file:
+NOTE: If you are building on Linux, consider these best practices. Typical Linux defaults are not necessarily well tuned for the needs of an IO intensive application like NiFi.
+For all of these areas, your distribution's requirements may vary. Use these sections as advice, but consult your distribution-specific documentation for how best to achieve these recommendations.
 
-    $ cd cygnus-ngsi
-    $ APACHE_MAVEN_HOME/bin/mvn exec:exec package
-    $ cp target/cygnus-<x.y.z>.jar APACHE_FLUME_HOME/plugins.d/cygnus/lib
+### Maximum File Handles
 
-Finally, please find a `compile.sh` script containing all the commands shown in this section. It must be parameterized with the version of the current branch and the Apache Flume base path.
+NiFi will at any one time potentially have a very large number of file handles open. Increase the limits by
+editing '/etc/security/limits.conf' to add something like.
 
-[Top](#top)
+```
+*  hard  nofile  50000
+*  soft  nofile  50000
+```
+### Maximum Forked Processes
 
-### <a name="section2.3"></a>Known issues
-It may happen while compiling `cygnus-ngsi` the Maven JVM has not enough memory. This can be changed as detailed at the [Maven official documentation](https://cwiki.apache.org/confluence/display/MAVEN/OutOfMemoryError):
+NiFi may be configured to generate a significant number of threads. To increase the allowable number edit '/etc/security/limits.conf'
+* hard nproc 10000
+* soft nproc 10000
 
-    $ export MAVEN_OPTS="-Xmx512m -XX:MaxPermSize=128m"
+And your distribution may require an edit to /etc/security/limits.d/90-nproc.conf by adding
+* soft nproc 10000
 
-[Top](#top)
+### Increase the number of TCP socket ports available
 
-## <a name="section3"></a>Installing dependencies
-These are the packages you will need to install under `APACHE_FLUME_HOME/plugins.d/cygnus/libext/` **if you did not included them in the cygnus-common jar**:
+This is particularly important if your flow will be setting up and tearing down a large number of sockets in small period of time.
 
-| Cygnus dependencies | Version | Required by / comments |
-|---|---|---|
-| mockito-all | 1.9.5 | Unit tests |
-| junit | 4.11 | Unit tests |
-| httpcore | 4.3.1 | Overwrites the one bundled in Apache Flume |
-| log4j | 1.2.17 | Logging |
-| slf4j-simple | 1.7.21 | Logging |
-| cygnus-common | latest | |
+```
+sudo sysctl -w net.ipv4.ip_local_port_range="10000 65000"
+```
+
+### Set how long sockets stay in a TIMED_WAIT state when closed
+
+You don't want your sockets to sit and linger too long given that you want to be able to quickly setup and teardown new sockets. It is a good idea to read more about
+it but to adjust do something like
+```
+sudo sysctl -w net.ipv4.netfilter.ip_conntrack_tcp_timeout_time_wait="1"
+```
+### Tell Linux you never want NiFi to swap
+Swapping is fantastic for some applications. It isn't good for something like
+NiFi that always wants to be running. To tell Linux you'd like swapping off you
+can edit '/etc/sysctl.conf' to add the following line
+```
+vm.swappiness = 0
+```
+### Disable partition atime
+
+For the partitions handling the various NiFi repos turn off things like 'atime'.
+Doing so can cause a surprising bump in throughput. Edit the '/etc/fstab' file
+and for the partition(s) of interest add the 'noatime' option.
+
+## Build steps
+
+   1. You need a recent Java 8 (or newer) JDK for the 1.x NiFi line. Older Java 8 (such as 1.8.0_31) is known to fail with some unit tests, ensure to use the most recent version. The 0.x line works on Java 7 or newer.
+   2. You need Apache Maven 3.1.0 or newer.
+   3. You need a recent git client for the 1.x NiFi line.
+   4. Ensure your MAVEN_OPTS provides sufficient memory. Some build steps are fairly memory intensive
+        * These settings have worked well `MAVEN_OPTS="-Xms1024m -Xmx3076m -XX:MaxPermSize=256m"`
+   5. Build the entire code base. In the root dir of the source tree run `mvn -T C2.0 clean install -Pinclude-grpc`
+   
+        * You can tweak the maven build settings as you like but the previous command will execute with 2 threads per core.
+        * You can omit the '-Pinclude-grpc' if you're not on a platform that it supports.
+
+Now you should have a fully functioning build off the latest codebase.
+
+*NOTE*: During development it is not necessary to build the entire code base. Typically, in case of a NAR bundle change you can build only the particular bundle followed by running `mvn -T C2.0 clean install -Ddir-only` in `nifi-assembly`.
+
+## Running the application
+#### ** WARNING **
+
+Without any configuration, the application will run on port 8080 and does not require any credentials to modify
+the flow. This means of running Apache NiFi should be used only for development/testing and in an environment where only
+connections from trusted computers and users can connect to port 8080. Using iptables to allow only localhost connections
+to 8080 is a good start, but on systems with multiple (potentially untrusted) users, also not a sufficient protection.
+
+### Decompress and launch
+
+Running the above build will create a tar.gz (and zip) file in `./nifi-assembly/target`. This tar.gz should
+contain the full application. Decompressing the tar.gz should make a directory for you containing several other
+directories. conf contains application configuration, bin contains scripts
+for launching the application. On linux and OSX, NiFi can be run using `bin/nifi.sh <command>` where
+`<command>` is one of:
+
+   * start: starts NiFi in the background
+   * stop: stops NiFi that is running in the background
+   * status: provides the current status of NiFi
+   * run: runs NiFi in the foreground and waits to receive a Ctrl-C, which then shuts down NiFi.
+   * install: (available in Linux only, not OSX): installs NiFi as a service that can then be controlled
+     via `service nifi start`, `service nifi stop`, `service nifi status`.
+
+For Windows users, the following scripts exist in the bin directory:
+
+    `run-nifi.bat`: runs NiFi in the foreground and waits to receive a Ctrl-C, which then shuts down NiFi
+    `status-nifi.bat`: provides the current status of NiFi
+
+The configuration that is to be used when launching NiFi, such as Java heap size, the user
+to run as, which Java command to use, etc. are configurable via the `conf/bootstrap.conf` file.
+
+The entire concept of how the application will integrate to a given OS and run as an
+enduring service is something we're working hard on and would appreciate ideas for. The user experience needs to
+be excellent.
+
+With the default settings you can point a web browser at `http://localhost:8080/nifi/`
+
+Logging is configured by default to log to `./logs/nifi-app.logv. The following log message should indicate the web UI
+is ready for use:
+```
+2014-12-09 00:42:03,540 INFO [main] org.apache.nifi.web.server.JettyServer NiFi has started. The UI is available at the following URLs:
+```
 
 [Top](#top)

@@ -12,7 +12,7 @@ Cygnus is a is an easy to use, powerful, and reliable system to process and dist
 NiFi is a dataflow system based on the concepts of flow-based programming. It supports powerful and scalable directed graphs of data routing, transformation, and system mediation logic.
 It was built to automate the flow of data between systems. While the term 'dataflow' is used in a variety of contexts, we use it here to mean the automated and managed flow of information between systems.
 
-###Terminology
+### Terminology
 
 In order to talk about Cygnus, there are a few key terms that readers should be familiar with. We will explain those NiFi-specific terms here, at a high level.
 
