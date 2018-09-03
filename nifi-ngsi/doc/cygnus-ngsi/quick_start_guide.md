@@ -21,8 +21,7 @@ Obviously, you will need docker and docker-compose installed and running in you 
 ### <a name="section2.1"></a>Building from sources
 (1) Start by cloning the `fiware-cygnus` repository:
 
-    git clone https://github.com/ging/fiware-cygnus.git
-    https://github.com/anmunoz/PrbAndres.git
+    git clone https://github.com/anmunoz/PrbAndres.git
     cd PrbAndres
     git checkout cygnus
 
