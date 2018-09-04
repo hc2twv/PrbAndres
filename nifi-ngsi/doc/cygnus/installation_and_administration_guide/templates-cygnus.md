@@ -1,7 +1,7 @@
 ### Templates
 
 In order to reduce the configuration complexity fo many processors and controllers,
-Cygnus includes some templates. A Template is a way of combining these basic building blocks into larger building blocks. Once a DataFlow has been created, parts of it can be formed into a Template. This Template can then be dragged onto the canvas, or can be exported as an XML file and shared with others. Templates received from others can then be imported into an instance of NiFi and dragged onto the canvas.
+Cygnus includes some templates. A Template is a way of combining these basic building blocks into larger building blocks. Once a DataFlow has been created, parts of it can be formed into a Template. This Template can then be dragged onto the canvas, or can be exported as an XML file and shared with others. Templates received from others can then be imported into an instance of NiFi and dragged into the canvas.
 
 The templates provided in the Cygnus are:
 

@@ -13,10 +13,10 @@ above:
 
 Fist we need to have Cygnus up and running. Then you need to follow the 
 steps to add a new processor showed in the [Cygnus GUI](../installation_and_administration_guide/cygnus_gui.md) section.
-Now put inside of the find field of the add processor window "Http". for filtering the processors
+Now put inside of the find field of the add processor window "Http". For filtering the processors
 and select teh "ListenHTTP" processor.
 
-The Listen HTTP processor Starts an HTTP Server and listens on a given base path to transform incoming requests into FlowFiles. The default URI of the Service will be http://{hostname}:{port}/v2/notify. Only HEAD and POST requests are supported. GET, PUT, and DELETE will result in an error and the HTTP response status code 405.
+The Listen HTTP processor starts an HTTP Server and listens on a given base path to transform incoming requests into FlowFiles. The default URI of the Service will be http://{hostname}:{port}/v2/notify. Only HEAD and POST requests are supported. GET, PUT, and DELETE will result in an error and the HTTP response status code 405.
 We use this NiFi native processor for receiving the HTTP notification comming from the Orion Context Broker.
 The configuration needed is showed in the figure above.
 

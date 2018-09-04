@@ -26,7 +26,7 @@ That is all you need to do before start the processors and start to
 receive data. 
 
 Now you can start your processors by selecting them and clicking in the Play button in the Operate pallet.
-at the end you should have a similar deployment like the next figure.
+At the end, you should have a similar deployment like the next figure.
 
 ![all-running](../images/all-running.png)
  
