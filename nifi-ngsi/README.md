@@ -34,7 +34,7 @@ Current stable release is able to persist the following sources of data in the f
 ## Cygnus place in FIWARE architecture
 Cygnus plays the role of a connector between Orion Context Broker (which is a NGSI source of data) and many external and FIWARE storages like MySQL, MongoDB
 
-![FIWARE architecture](imagesiware_architecture.png)
+![FIWARE architecture](./images/fiware_architecture.png)
 
 ## Further documentation
 The **Quick Start Guide** is found at readthedocs.org provides a good documentation summary ([Cygnus](http://fiware-cygnus.readthedocs.io/en/latest/cygnus-ngsi/quick_start_guide/index.html)).
