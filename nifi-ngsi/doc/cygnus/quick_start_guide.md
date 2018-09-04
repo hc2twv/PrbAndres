@@ -1,5 +1,5 @@
 # Cygnus Quick Start Guide
-This quick start overviews the steps a newbie programmer will have to follow in order to get familiar with Cygnus and its basic functionality. For more detailed information, please refer to the [README](../index.md); the [Installation and Administration Guide](./installation_and_administration_guide/README.md) and the [Processors Catalogue](processors_catalogue/README.md) fully document Cygnus.
+This quick start overviews the steps a newbie programmer will have to follow in order to get familiar with Cygnus and its basic functionality. For more detailed information, please refer to the [README](../../README.md); the [Installation and Administration Guide](./installation_and_administration_guide/README.md) and the [Processors Catalogue](processors_catalogue/README.md) fully document Cygnus.
 
 ## Scenario
 The scenario presented in this guide is composed by two containers.
